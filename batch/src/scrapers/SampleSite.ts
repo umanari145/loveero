@@ -1,3 +1,4 @@
+import { Scraper } from "../interface/Scraper";
 
 export const scrapers: Scraper[] = [
   // サイトA用スクレイパー
