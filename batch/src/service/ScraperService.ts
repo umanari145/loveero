@@ -2,7 +2,7 @@ import axios from "axios";
 import { Scraper } from "../interface/Scraper";
 import { load } from "cheerio";
 import { Item } from "../interface/Item";
-import { Page } from "../interface/Page";
+import { Thumnail } from "../interface/Thumbnail";
 import { StorageFactory } from "../infra/StorageFactory";
 
 class ScrapingService {
@@ -36,7 +36,7 @@ class ScrapingService {
   }
 
   // 一覧ページをスクレイピング
-  public async scrapeListPage(page: number = 1): Promise<Page[]> {
+  public async scrapeListPage(page: number = 1): Promise<Thumnail[]> {
     const url = this.scraper.listPage.url(page);
     const html = await this.fetchHtml(url);
     const site = load(html);
@@ -44,10 +44,10 @@ class ScrapingService {
   }
 
   // 詳細ページをスクレイピング
-  public async scrapeDetailPage(url: string):Promise<Item> {
-    const html = await this.fetchHtml(url);
+  public async scrapeDetailPage(thumbnail: Thumnail):Promise<Item> {
+    const html = await this.fetchHtml(thumbnail.url);
     const detail = load(html);
-    return this.scraper.detailPage.extract(detail);
+    return this.scraper.detailPage.extract(detail, thumbnail);
   }
   
   // 複数ページをスクレイピングして結果を保存
@@ -59,19 +59,19 @@ class ScrapingService {
 
       try {
         // 一覧ページをスクレイピング
-        const pages = await this.scrapeListPage(page);
-        console.log(`Found ${pages.length} videos on page ${page}`);
+        const thumbnails = await this.scrapeListPage(page);
+        console.log(`Found ${thumbnails.length} videos`);
         
         // 各動画の詳細ページをスクレイピング
-        for (const page of pages) {
+        for (const thumbnail of thumbnails) {
           try {
-            console.log(`Scraping details for (${page.url})`);
-            const item = await this.scrapeDetailPage(page.url);
+            console.log(`Scraping details for (${thumbnail.url})`);
+            const item = await this.scrapeDetailPage(thumbnail);
             items.push(item);
             // レート制限を回避するために少し待機
             await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
           } catch (error) {
-            console.error(`Error scraping video details for ${page.url}:`, error);
+            console.error(`Error scraping video details for ${thumbnail.url}:`, error);
           }
         }
         // ページ間の待機時間
