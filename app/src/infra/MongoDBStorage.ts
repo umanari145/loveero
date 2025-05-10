@@ -1,7 +1,7 @@
 // MongoDB を使用したストレージ実装
 import { MongoClient, Collection } from 'mongodb';
 
-export class MongoDBStorage implements DataStorage {
+export class MongoDBStorage {
   private collection: Collection | null = null;
   private client: MongoClient | null = null;
   private dbName: string;
@@ -31,22 +31,55 @@ export class MongoDBStorage implements DataStorage {
     }
   }
 
-  async save(data: any): Promise<void> {
+  async save(item:any): Promise<void> {
     try {
       const collection = await this.connect();
 
       // IDがある場合は一致するドキュメントを更新、なければ新規作成
-      if (data._id) {
+      if (item._id) {
         await collection.updateOne(
-          { _id: data._id },
-          { $set: data },
+          { _id: item._id },
+          { $set: item },
           { upsert: true }
         );
       } else {
-        await collection.insertOne(data);
+        await collection.insertOne(item);
       }
 
       console.log('データがMongoDBに保存されました');
+    } catch (error) {
+      console.error('MongoDB保存エラー:', error);
+      throw error;
+    }
+  }
+
+  async bulkSave(items: Array<any>): Promise<void> {
+    try {
+      const collection = await this.connect();
+      const operations: any[] = [];
+
+      items.forEach(item => {
+        if (item._id) {
+          operations.push({
+            updateOne: {
+              filter: { _id: item._id },
+              update: { $set: item },
+              upsert: false,
+            },
+          });
+        } else {
+          operations.push({ insertOne: { document: item } });
+        }
+      });
+
+      if (operations.length > 0) {
+        const result = await collection.bulkWrite(operations);
+        const insertedCount = result.insertedCount || 0;
+        const modifiedCount = result.modifiedCount || 0;
+        console.log(`${insertedCount + modifiedCount} 件のデータがMongoDBに保存/更新されました`);
+      } else {
+        console.log('保存/更新するデータはありませんでした');
+      }
     } catch (error) {
       console.error('MongoDB保存エラー:', error);
       throw error;
@@ -68,6 +101,13 @@ export class MongoDBStorage implements DataStorage {
     if (this.client) {
       await this.client.close();
       console.log('MongoDB接続を閉じました');
+    }
+  }
+
+  async delete(): Promise<void> {
+    if (this.client) {
+      const collection = await this.connect();
+      await collection.deleteMany({})
     }
   }
 }

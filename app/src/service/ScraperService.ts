@@ -81,7 +81,7 @@ export class ScrapingService {
     }
 
     const storage = StorageFactory.getStorage();
-    await storage.save(items);
+    await storage.bulkSave(items);
   }
 
   public sum(a: number, b:number): number {
