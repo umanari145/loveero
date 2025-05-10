@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <div className="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden">
       <Header></Header>
-      <div className="px-4 py-3">
+      <div className="px-4">
         <label className="flex flex-col min-w-40 h-12 w-full">
           <div className="flex w-full flex-1 items-stretch rounded-xl h-full">
             <div
