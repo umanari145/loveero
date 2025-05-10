@@ -1,10 +1,11 @@
 import { Item } from "@/interface/Item";
 import { Scraper } from "@/interface/Scraper";
 import { Thumbnail } from "@/interface/Thumbnail";
+import { constructThumbnailUrl } from "../../utils/StringUtil";
 
 export const dummySite1: Scraper = {
   name: '4545動画',
-  baseUrl: 'https://4545.to/latest',
+  baseUrl: 'https://4545.to/',
   listPage: {
     url: (page: number) => `https://4545.to/latest/${page}`,
     extract: async ($: cheerio.Root): Promise<Thumbnail[]> => {
@@ -17,10 +18,13 @@ export const dummySite1: Scraper = {
         const thumbnailElement = $('figure > a > img', videoInfo);
         const urlElement = $('figure > a', videoInfo);
         if (titleElement !== '') {
+          const thumbnailUrl = constructThumbnailUrl(dummySite1.baseUrl, thumbnailElement.attr('src')!)
+          const pageUrl = dummySite1.baseUrl + urlElement.attr('href')!
+
           thumbnails.push({
             title: titleElement,
-            thumbnail: thumbnailElement.attr('src')!,
-            url: urlElement.attr('href')!
+            thumbnail: thumbnailUrl,
+            url:pageUrl
           });
         }
       });

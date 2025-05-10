@@ -44,7 +44,7 @@ export class ScrapingService {
   }
 
   // 詳細ページをスクレイピング
-  public async scrapeDetailPage(thumbnail: Thumbnail):Promise<Item> {
+  public async scrapeDetailPage(thumbnail: Thumbnail): Promise<Item> {
     const html = await this.fetchHtml(thumbnail.url);
     const detail = load(html);
     return this.scraper.detailPage.extract(detail, thumbnail);

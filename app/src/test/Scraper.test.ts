@@ -11,16 +11,32 @@ describe('Scraper', () => {
     expect(ans1).toBe(3);
   });
 
-  it('scraping', async() => {
+  it('scraping list', async() => {
     const ss:Scraper = dummySite1;
     const scraperService  = new ScrapingService(ss);
-    const res = await scraperService.scrapeListPage(1)
-    expect(res.length).toBeGreaterThanOrEqual(1);
+    const items = await scraperService.scrapeListPage(1)
+    //console.log(items)
+    expect(items.length).toBeGreaterThanOrEqual(1);
     // resをループして各プロパティの検証
-    res.forEach((item) => {
+    items.forEach((item) => {
       expect(item.title).not.toBe('');
-      expect(item.thumbnail).not.toBe('');
-      expect(item.url).toMatch(/^video\/play\/\d+$/);
+      expect(item.thumbnail).toMatch(/^https:\/\//);
+      expect(item.url).toMatch(/^https:\/\/4545\.to\/video\/play\/\d+$/);
     })
+  }, 20000);
+
+  // it.only この関数だけを実行させたい時
+  it('scraping detail', async() => {
+    const ss:Scraper = dummySite1;
+    const scraperService  = new ScrapingService(ss);
+    const items = await scraperService.scrapeListPage(1)
+    const item = await scraperService.scrapeDetailPage(items[0])
+    //console.log(item)
+    expect(item.title).not.toBe('');
+    expect(item.url).toMatch(/^https:\/\/4545\.to\/video\/play\/\d+$/);
+    expect(item.videoUrl).toMatch(/^https:\/\//);
+    expect(item.imageUrl).toMatch(/^https:\/\//);
+    expect(Array.isArray(item.tags)).toBe(true);
+    expect(item.tags!.length).toBeGreaterThan(0);
   }, 20000);
 });
