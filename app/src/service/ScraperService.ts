@@ -2,10 +2,10 @@ import axios from "axios";
 import { Scraper } from "../interface/Scraper";
 import { load } from "cheerio";
 import { Item } from "../interface/Item";
-import { Thumnail } from "../interface/Thumbnail";
+import { Thumbnail } from "../interface/Thumbnail";
 import { StorageFactory } from "../infra/StorageFactory";
 
-class ScrapingService {
+export class ScrapingService {
   private scraper: Scraper;
 
   constructor(scraper: Scraper) {
@@ -36,7 +36,7 @@ class ScrapingService {
   }
 
   // 一覧ページをスクレイピング
-  public async scrapeListPage(page: number = 1): Promise<Thumnail[]> {
+  public async scrapeListPage(page: number = 1): Promise<Thumbnail[]> {
     const url = this.scraper.listPage.url(page);
     const html = await this.fetchHtml(url);
     const site = load(html);
@@ -44,7 +44,7 @@ class ScrapingService {
   }
 
   // 詳細ページをスクレイピング
-  public async scrapeDetailPage(thumbnail: Thumnail):Promise<Item> {
+  public async scrapeDetailPage(thumbnail: Thumbnail):Promise<Item> {
     const html = await this.fetchHtml(thumbnail.url);
     const detail = load(html);
     return this.scraper.detailPage.extract(detail, thumbnail);
@@ -52,8 +52,7 @@ class ScrapingService {
   
   // 複数ページをスクレイピングして結果を保存
   public async scrapeMultiplePages(startPage: number, endPage: number) {
-
-    let items: Item[] = []
+    const items: Item[] = []
     for (let page = startPage; page <= endPage; page++) {
       console.log(`Scraping page ${page} of ${this.scraper.name}...`);
 
@@ -83,5 +82,9 @@ class ScrapingService {
 
     const storage = StorageFactory.getStorage();
     await storage.save(items);
+  }
+
+  public sum(a: number, b:number): number {
+    return a+b
   }
 }

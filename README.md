@@ -62,12 +62,17 @@ User 'loveero_user' created for database 'loveero'
 Collection 'movies' created in database 'loveero'
 Connection to MongoDB closed
 ```
-
 ## prisma
 ORマッパ-<br>
-mongoDBも対応。migrationあるけど、型の担保ないので意味ないのでは？
+mongoDBも対応。migrationも一応ある
 一応下記でcollection作成
 ```
 cd /app
 npx prisma db push
 ```
+
+## 参考文献
+https://qiita.com/am_765/items/5e42bd5f87b296f61fbc<br>
+https://qiita.com/boragi/items/1e3038a87e36e19d2951<br>
+https://zenn.dev/thirosue/books/49a4ee418743ed/viewer/57d161<br>
+https://zenn.dev/denham/scraps/fe266461827012
