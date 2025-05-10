@@ -86,16 +86,26 @@ export class MongoDBStorage {
     }
   }
 
-  async load(): Promise<any> {
+  async load(page:number= 1, limit:number = 10): Promise<any> {
     try {
+      const skip = (page - 1) * limit;
       const collection = await this.connect();
-      const documents = await collection.find({}).toArray();
-      return documents;
+      const documents = await collection.find({})
+        .skip(skip)
+        .limit(limit)
+        .toArray();
+
+      const total = await collection.countDocuments()
+      return {
+        "items": documents,
+        "total": total
+      }
     } catch (error) {
       console.error('MongoDB読み込みエラー:', error);
       throw error;
     }
   }
+
 
   async close(): Promise<void> {
     if (this.client) {

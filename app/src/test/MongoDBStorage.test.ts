@@ -21,8 +21,8 @@ describe('DB', () => {
     };
     await storage.save(item)
     const data = await storage.load()
-    expect(data[0].title).toBe('hogehoge')
-    expect(data[0].url).toBe('http://www.yahoo.co.jp')
+    expect(data.items[0].title).toBe('hogehoge')
+    expect(data.items[0].url).toBe('http://www.yahoo.co.jp')
   }, 20000);
 
   it('複数データ投入', async() => {
@@ -38,10 +38,10 @@ describe('DB', () => {
     ];
     await storage.bulkSave(items)
     const data = await storage.load()
-    expect(data.length).toBe(items.length);
+    expect(data.total).toBe(items.length);
 
     // ロードされたデータが保存したデータを含んでいることを確認
-    expect(data).toEqual(
+    expect(data.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           title: 'hogehoge',

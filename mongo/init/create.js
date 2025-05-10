@@ -1,5 +1,6 @@
 import { MongoClient } from "mongodb";
 import 'dotenv/config'
+import * as fs from 'fs/promises';
 
 // 接続情報の設定(admin)
 const uri = "mongodb://root:pass@mongo:27017";  // MongoDBサーバーのURI
@@ -32,6 +33,11 @@ async function main() {
     // コレクションが存在しない場合は作成
     await db.createCollection(collectionName);
     console.log(`Collection '${collectionName}' created in database '${dbName}'`);
+    const jsonData = await fs.readFile("items.json", 'utf-8');
+    const items = JSON.parse(jsonData);
+    const collection = db.collection(collectionName);
+    const result = await collection.insertMany(items);
+    console.log(`${result.insertedCount} 件のドキュメントを挿入しました`);
 
   } catch (error) {
     console.error("An error occurred:", error);

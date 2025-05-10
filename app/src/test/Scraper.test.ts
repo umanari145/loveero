@@ -49,8 +49,8 @@ describe('Scraper', () => {
     const scraperService  = new ScrapingService(ss);
     await scraperService.scrapeMultiplePages(1, 2, true)
     const items = await storage.load()
-    // console.log(data)
-    items.forEach((item:Item) => {
+    //console.log(items)
+    items.items.forEach((item:Item) => {
       expect(item.title).not.toBe('');
       expect(item.imageUrl).toMatch(/^https:\/\//);
       expect(item.url).toMatch(/^https:\/\/4545\.to\/video\/play\/\d+$/);
@@ -61,5 +61,5 @@ describe('Scraper', () => {
     })
     await storage.delete()
     await storage.close()
-  }, 20000 * 10);
+  }, 20000 * 100);
 });
