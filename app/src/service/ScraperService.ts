@@ -51,7 +51,7 @@ export class ScrapingService {
   }
   
   // 複数ページをスクレイピングして結果を保存
-  public async scrapeMultiplePages(startPage: number, endPage: number) {
+  public async scrapeMultiplePages(startPage: number, endPage: number, isTest: boolean = false) {
     const items: Item[] = []
     for (let page = startPage; page <= endPage; page++) {
       console.log(`Scraping page ${page} of ${this.scraper.name}...`);
@@ -62,9 +62,15 @@ export class ScrapingService {
         console.log(`Found ${thumbnails.length} videos`);
         
         // 各動画の詳細ページをスクレイピング
+        let count_for_loop = 0;
         for (const thumbnail of thumbnails) {
+          count_for_loop++
           try {
+            if (isTest && count_for_loop > 2) {
+              break;
+            }
             console.log(`Scraping details for (${thumbnail.url})`);
+            // 時間節約のためテスト時は2個でbreak
             const item = await this.scrapeDetailPage(thumbnail);
             items.push(item);
             // レート制限を回避するために少し待機
@@ -82,6 +88,7 @@ export class ScrapingService {
 
     const storage = StorageFactory.getStorage();
     await storage.bulkSave(items);
+    await storage.close();
   }
 
   public sum(a: number, b:number): number {
