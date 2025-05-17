@@ -1,43 +1,77 @@
+import { Item } from "@/interface/Item";
 import Header from "@/layout/header"
+import { useEffect, useState } from "react";
+import { useRouter } from "../../../node_modules/next/router";
 
 export default function MovieDetail() {
+  const router = useRouter();
+  const { id } = router.query;
+  const [data, setData] = useState<Item>();
+  //const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = async (id:string): Promise<void> => {
+    try {
+      //setLoading(true);
+      // JSONPlaceholderのAPIからダミーデータを取得
+      const response = await fetch(`/api/item/${id}`);
+      if (!response.ok) {
+        throw new Error(`APIエラー: ${response.status}`);
+      }
+      const result = await response.json();
+      setData(result.item)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
+    } finally {
+      //setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof id === 'string') {
+      fetchData(id);
+    }
+  }, [id]);
+
   return (
-    <div
-      class="relative flex size-full min-h-screen flex-col bg-white justify-between group/design-root overflow-x-hidden"
-    >
+      <div className="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden">
       <div>
         <Header></Header>
-        <div
-          class="relative flex items-center justify-center bg-[#141414] bg-cover bg-center aspect-video"
+        <div>
+        <iframe
+          width="98%"
+          src={data?.videoUrl}
+          title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          referrerpolicy="strict-origin-when-cross-origin"
+          style={{
+            display: 'block', // margin: auto; を効かせるために必要
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            border: 'none',
+          }}
         >
-          <button class="flex shrink-0 items-center justify-center rounded-full size-16 bg-black/40 text-white">
-            <div class="text-inherit" data-icon="Play" data-size="24px" data-weight="fill">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                <path
-                  d="M240,128a15.74,15.74,0,0,1-7.6,13.51L88.32,229.65a16,16,0,0,1-16.2.3A15.86,15.86,0,0,1,64,216.13V39.87a15.86,15.86,0,0,1,8.12-13.82,16,16,0,0,1,16.2.3L232.4,114.49A15.74,15.74,0,0,1,240,128Z"
-                ></path>
-              </svg>
-            </div>
-          </button>
-          <div class="absolute inset-x-0 bottom-0 px-4 py-3">
-            <div class="flex h-4 items-center justify-center">
-              <div class="h-1 flex-1 rounded-full bg-white"></div>
-              <div class="relative"><div class="absolute -left-2 -top-2 size-4 rounded-full bg-white"></div></div>
-              <div class="h-1 flex-1 rounded-full bg-white opacity-40"></div>
-            </div>
-            <div class="flex items-center justify-between">
-              <p class="text-white text-xs font-medium leading-normal tracking-[0.015em]">0:37</p>
-              <p class="text-white text-xs font-medium leading-normal tracking-[0.015em]">2:23</p>
-            </div>
-          </div>
+        </iframe>
+        </div>
+        <h1 class="text-[#141414] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 text-left pb-3 pt-5">
+          {data?.title}
+        </h1>
+
+        <div className="flex items-center flex-wrap gap-2 px-4 py-2">
+          {data?.tags.map((tag:string) => (
+            <span className="bg-gray-200 text-gray-700 text-sm font-medium rounded-full px-3 py-1">
+              {tag}
+            </span>
+          ))}
         </div>
 
-        <h1 class="text-[#141414] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 text-left pb-3 pt-5">50c for a bowl of noodles and still too expensive?</h1>
-
-        <p class="text-[#141414] text-base font-normal leading-normal pb-3 pt-1 px-4">2.2k views · 27min ago</p>
+        <p class="text-[#141414] text-base font-normal leading-normal pb-3 pt-1 px-4">
+          2.2k views
+        </p>
         <div class="flex items-center gap-4 bg-white px-4 min-h-14 justify-between">
           <div class="flex items-center gap-4">
-            <p class="text-[#141414] text-base font-normal leading-normal flex-1 truncate">Foodie in China</p>
+            <p class="text-[#141414] text-base font-normal leading-normal flex-1 truncate">サイト</p>
           </div>
           <div class="shrink-0">
             <button
@@ -85,7 +119,6 @@ export default function MovieDetail() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }

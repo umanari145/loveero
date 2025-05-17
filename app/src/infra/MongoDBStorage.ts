@@ -1,5 +1,5 @@
 // MongoDB を使用したストレージ実装
-import { MongoClient, Collection } from 'mongodb';
+import { MongoClient, Collection, ObjectId} from 'mongodb';
 
 export class MongoDBStorage {
   private collection: Collection | null = null;
@@ -101,6 +101,21 @@ export class MongoDBStorage {
         "total": total
       }
     } catch (error) {
+      console.error('MongoDB読み込みエラー:', error);
+      throw error;
+    }
+  }
+
+  async get(id:string): Promise<any> {
+    try {
+      const collection = await this.connect();
+      const query = { _id: new ObjectId(id)};
+      const item = await collection.findOne(query);
+      return {
+        "item": item,
+      }
+    } catch (error) {
+      console.log(error)
       console.error('MongoDB読み込みエラー:', error);
       throw error;
     }

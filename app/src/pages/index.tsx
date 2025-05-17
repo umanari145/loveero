@@ -1,12 +1,8 @@
+import { ApiResponse } from "@/interface/ApiResponse";
 import Header from "@/layout/header"
 import { useEffect, useState } from "react";
 import { JSX } from "react/jsx-runtime";
 import { Item } from "../interface/Item";
-interface ApiResponse {
-  data: any[];
-  //loading: boolean;
-  error: string | null;
-}
 
 // APIからデータを取得するカスタムフック
 function useApiData(): ApiResponse {
@@ -40,20 +36,41 @@ function useApiData(): ApiResponse {
 }
 
 function ItemComponent({item}: Item): JSX.Element {
-  console.log(item)
   return (
-    <div className="p-4 mb-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow">
-      <a href={`/movies/${item._id}`}>
-        <h2 className="text-[#141414] text-[12px]font-semibold mb-2 truncate">{item.title}</h2>
-        <img src={item.imageUrl} />
-      </a>
-    </div>
-  );
+      <li key={item._id} className="bg-white rounded-lg overflow-hidden">
+        <div className="flex w-95 m-auto">
+          <div className="w-40 h-24 md:w-48 md:h-27 lg:w-64 lg:h-36 shrink-0">
+            <a href={`/movies/${item._id}`}>
+              <img
+                src={item.imageUrl}
+                alt={item.title}
+                className="w-full h-full object-cover"
+              />
+            </a>
+          </div>
+          <div className="flex-1 px-2">
+            <a href={`/movies/${item._id}`}>
+              <h2 className="text-lg font-semibold mb-2 text-[#141414]">{item.title}</h2>
+            </a>
+            <div className="flex flex-wrap gap-2">
+              {item.tags.map((tag:string) => (
+                <span
+                  key={tag}
+                  className="bg-gray-200 text-gray-700 text-sm font-medium rounded-full px-2 py-1"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </li>
+  )
 }
 
 export default function Home():JSX.Element {
   const { data,  error} = useApiData();
-  console.log(data)
+
   return (
     <div className="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden">
       <Header></Header>
@@ -96,12 +113,13 @@ export default function Home():JSX.Element {
         </div>
       </div>
 
-      <h2 className="text-[#141414] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">人気動画</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <h2 className="text-[#141414] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">動画リスト</h2>
+      <ul className="grid grid-cols-1 gap-6">
         {data.map((item:Item) => (
           <ItemComponent key={item._id} item={item} />
         ))}
-      </div>
+      </ul>
+
 
     </div>
   );
