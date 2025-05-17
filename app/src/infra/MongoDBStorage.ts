@@ -59,7 +59,7 @@ export class MongoDBStorage {
       const operations: any[] = [];
 
       items.forEach(item => {
-        if (item._id) {
+        /*if (item._id) {
           operations.push({
             updateOne: {
               filter: { _id: item._id },
@@ -67,9 +67,9 @@ export class MongoDBStorage {
               upsert: false,
             },
           });
-        } else {
+        } else {*/
           operations.push({ insertOne: { document: item } });
-        }
+        //}
       });
 
       if (operations.length > 0) {

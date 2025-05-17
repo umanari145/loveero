@@ -1,6 +1,13 @@
 # loveero
 loveero
 
+backend+frontend
+- Next.js
+DB
+- mongoDB
+Infra
+- terraform
+
 ### Next(backend+frontend)
 
 nextのインストール
@@ -70,7 +77,7 @@ mongoDBも対応。migrationも一応ある
 cd /app
 npx prisma db push
 ```
-
+→ 結局使わないかも
 ## 参考文献
 https://qiita.com/am_765/items/5e42bd5f87b296f61fbc<br>
 https://qiita.com/boragi/items/1e3038a87e36e19d2951<br>
