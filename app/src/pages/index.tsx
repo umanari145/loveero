@@ -1,39 +1,9 @@
 import { ApiResponse } from "@/interface/ApiResponse";
 import Header from "@/layout/header"
+import { Pagination } from "@/parts/Paginations";
 import { useEffect, useState } from "react";
 import { JSX } from "react/jsx-runtime";
 import { Item } from "../interface/Item";
-
-// APIからデータを取得するカスタムフック
-function useApiData(): ApiResponse {
-  const [data, setData] = useState<[]>([]);
-  //const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData = async (): Promise<void> => {
-      try {
-        //setLoading(true);
-        // JSONPlaceholderのAPIからダミーデータを取得
-        const response = await fetch('/api/items');
-        if (!response.ok) {
-          throw new Error(`APIエラー: ${response.status}`);
-        }
-
-        const result = await response.json();
-        setData(result.items)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
-      } finally {
-        //setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  return { data, error };
-}
 
 function ItemComponent({item}: Item): JSX.Element {
   return (
@@ -69,7 +39,38 @@ function ItemComponent({item}: Item): JSX.Element {
 }
 
 export default function Home():JSX.Element {
-  const { data,  error} = useApiData();
+  const [data, setData] = useState<[]>([]);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  //const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const handlePageChange = async (page_no: number) => {
+    fetchData();
+  };
+
+  const fetchData = async (): Promise<void> => {
+    try {
+      //setLoading(true);
+      // JSONPlaceholderのAPIからダミーデータを取得
+      const response = await fetch(`/api/items?page=${currentPage}`);
+      if (!response.ok) {
+        throw new Error(`APIエラー: ${response.status}`);
+      }
+
+      const result = await response.json();
+      setData(result.items)
+      setTotalPages(result.total)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
+    } finally {
+      //setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div className="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden">
@@ -120,7 +121,11 @@ export default function Home():JSX.Element {
         ))}
       </ul>
 
-
+      <Pagination
+        totalPages={totalPages!}
+        currentPage={currentPage!}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 }
