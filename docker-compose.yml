@@ -3,7 +3,9 @@ services:
 
   app:
     container_name: l-app
-    image: node:latest
+    build:
+      context: "./docker"
+      dockerfile: "Dockerfile"
     ports:
       - 3000:3000
     tty: true
