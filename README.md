@@ -73,13 +73,18 @@ Connection to MongoDB closed
 ORマッパ-<br>
 mongoDBも対応。migrationも一応ある
 一応下記でcollection作成
+https://qiita.com/quesman011/items/4546093f636865bf42c2
+
+
 ```
-cd /app
-npx prisma db push
+# 設定ファイル作成
+npx prisma init
+
+# migrationファイルが作れる＋スキーマ反映がされるnpx prisma migrate status
+npx prisma migrate dev --name add-movie
 ```
 → 結局使わないかも
 ## 参考文献
 https://qiita.com/am_765/items/5e42bd5f87b296f61fbc<br>
 https://qiita.com/boragi/items/1e3038a87e36e19d2951<br>
 https://zenn.dev/thirosue/books/49a4ee418743ed/viewer/57d161<br>
-https://zenn.dev/denham/scraps/fe266461827012

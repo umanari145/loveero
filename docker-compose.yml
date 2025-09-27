@@ -3,9 +3,7 @@ services:
 
   app:
     container_name: l-app
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
+    image: node:24-alpine
     ports:
       - 3000:3000
     tty: true
@@ -14,31 +12,49 @@ services:
     networks:
       - loveero
 
-  mongo_node:
-    container_name: l-mongo-node
-    image: node:18.12-alpine
-    tty: true
+  #mongo_node:
+  #  container_name: l-mongo-node
+  #  image: node:18.12-alpine
+  #  tty: true
+  #  volumes:
+  #      - ./mongo:/app
+  #  environment:
+  #    - DOC_DB_PROTOCOL
+  #    - DOC_DB_PASS
+  #    - DOC_DB_USER
+  #    - DOC_DB_HOST
+  #  networks:
+  #    - loveero
+  #mongo:
+  #  container_name: l-mongo
+  #  image: mongo
+  #  restart: always
+  #  ports:
+  #    - "27017:27017"
+  #  volumes:
+  #    - ./mongo/init:/docker-entrypoint-initdb.d
+  #  environment:
+  #    MONGO_INITDB_ROOT_USERNAME: root
+  #    MONGO_INITDB_ROOT_PASSWORD: pass
+  #    TZ: Asia/Tokyo
+  #  networks:
+  #    - loveero
+
+  db:
+    container_name: l-rdb
+    image: mysql:8.0
     volumes:
-        - ./mongo:/app
+      - ./docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql      
     environment:
-      - DOC_DB_PROTOCOL
-      - DOC_DB_PASS
-      - DOC_DB_USER
-      - DOC_DB_HOST
-    networks:
-      - loveero
-  mongo:
-    container_name: l-mongo
-    image: mongo
-    restart: always
+      - MYSQL_DATABASE=loveero
+      - MYSQL_USER=loveero_user
+      - MYSQL_PASSWORD=loveero_pass
+      - MYSQL_ROOT_PASSWORD=secret
+      - TZ=Asia/Tokyo
+      - DB_PORT=3306
     ports:
-      - "27017:27017"
-    volumes:
-      - ./mongo/init:/docker-entrypoint-initdb.d
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: pass
-      TZ: Asia/Tokyo
+      - "3306:3306"
     networks:
       - loveero
 networks:
